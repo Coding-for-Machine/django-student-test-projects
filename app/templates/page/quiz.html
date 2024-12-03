@@ -1,0 +1,157 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+    <!-- modal dialog -->
+  
+
+    
+          
+ 
+    
+      
+      <!-- open button -->
+      <div class="bg-gray-100">
+        <div class="container mx-auto py-8">
+            <div class="grid grid-cols-4 md:grid-cols-12 gap-4 px-4">
+                <div class="col-span-4 md:col-span-4 ">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex flex-col items-center">
+                            <img src="{{user_profil.image.url}}" class="w-32 h-32 bg-gray-300 rounded-full mb-4 shrink-0">
+    
+                            </img>
+                            <h1 class="text-xl font-bold">{{user.first_name}}</h1>
+                            <p class="text-gray-700">{{user.email}}</p>
+                            <p>{{user_profil.bio}}</p>
+                            <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                                <a href="{% url 'users:edit' request.user.id %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">O'zgartirish</a>
+                                <a href="{% url "users:logout" %}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded">Chiqish</a>
+                            </div>
+                        </div>
+                        <hr class="my-6 border-t border-gray-300">
+                        <div class="flex flex-col">
+                            <span class="text-gray-700 uppercase font-bold tracking-wider mb-2">Natijalar</span>
+                            <ul>
+                              {% for r in results %}
+                              <li class="mb-2 text-center">{{r.quiz.name}}</li>
+                              <div x-data="{ currentVal: {{r.score}} ,minVal: 0 ,maxVal: 100, calcPercentage(min, max, val){return (((val-min)/(max-min))*100).toFixed(0)} }" class="flex h-4 w-full overflow-hidden rounded-md bg-neutral-50 dark:bg-neutral-900" role="progressbar" aria-label="default progress bar" :aria-valuenow="currentVal" :aria-valuemin="minVal" :aria-valuemax="maxVal">
+                                <div class="h-full rounded-md {% if r.score >= r.quiz.utish_foizi %} bg-neutral-800 {% else %} bg-red-600 {% endif %} p-0.5 text-center text-xs font-semibold leading-none text-neutral-100 dark:bg-white dark:text-black" :style="`width: ${calcPercentage(minVal, maxVal, currentVal)}%`">
+                                    <span x-text="`${calcPercentage(minVal, maxVal, currentVal)}%`"></span>
+                                </div>
+                              </div>
+                              {% endfor %}
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-4 md:col-span-8 lg:md:col-span-8">
+                    <div class="bg-white shadow rounded-lg p-6">
+
+
+                      <div class="flex flex-wrap justify-center">
+                        {% for quiz in quizs %}
+                        <div class="flex-none text-white p-5 m-2" style="width: calc(50% - 20px);">
+                          <article class="group flex rounded-md max-w-sm flex-col overflow-hidden border border-neutral-300 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300">
+                            <div class="h-44 md:h-64 w-full overflow-hidden">  
+                              {% if quiz.image.url %}
+                              <div class="h-64 w-full overflow-hidden">
+                                <img 
+                                  src="{{quiz.image.url}}" 
+                                  class="w-full h-full object-contain object-cover transition duration-700 ease-out group-hover:scale-105"
+                                  alt="description" 
+                                />
+                              </div>
+                              {% endif %}
+                            </div>
+                            <div class="flex flex-col gap-4 p-6">
+                              <div class="flex items-center gap-1 font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 20px; height: 20px; margin-right: 12px;">
+                                  <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                      <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/>
+                                      
+                                      <span>test-vaqti: 00:{{quiz.vaqti}} m</span>
+                                    </svg>
+                                  </div>
+                                  <h3 class="text-balance text-xl lg:text-2xl font-bold text-neutral-900 dark:text-white" aria-describedby="tripDescription">
+                                    {{quiz.name}}
+                                  </h3>
+                                  <p id="tripDescription" class="text-pretty text-sm mb-2">
+                                    {{quiz.body}}
+                                  </p>
+                                  <div x-data="{ successModalIsOpen: false }">
+                                    <button
+                                        @click="successModalIsOpen = true" 
+                                        type="button" 
+                                        class="w-36 cursor-pointer whitespace-nowrap rounded-md bg-green-500 px-4 py-2 text-center text-sm font-medium tracking-wide text-white transition hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500 active:opacity-100 active:outline-offset-0">
+                                        Testni Boshlash
+                                    </button>
+                                    <div 
+                                        x-cloak 
+                                        x-show="successModalIsOpen" 
+                                        x-transition.opacity.duration.200ms 
+                                        x-trap.inert.noscroll="successModalIsOpen" 
+                                        @keydown.esc.window="successModalIsOpen = false" 
+                                        @click.self="successModalIsOpen = false" 
+                                        class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md sm:items-center lg:p-8" 
+                                        role="dialog" 
+                                        aria-modal="true" 
+                                        aria-labelledby="successModalTitle">
+                                        <!-- Modal Dialog -->
+                                        <div 
+                                            x-show="successModalIsOpen" 
+                                            x-transition:enter="transition ease-out duration-200 delay-100 motion-reduce:transition-opacity" 
+                                            x-transition:enter-start="opacity-0 scale-50" 
+                                            x-transition:enter-end="opacity-100 scale-100" 
+                                            class="flex max-w-lg flex-col gap-4 overflow-hidden rounded-md border border-neutral-300 bg-white text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 min-w-[400px] min-h-[200px]">
+                                            <!-- Dialog Header -->
+                                            <div class="flex items-center justify-between border-b border-neutral-300 bg-neutral-50/60 px-4 py-2 dark:border-neutral-700 dark:bg-neutral-950/20">
+                                                <div class="flex items-center justify-center rounded-full bg-green-500/20 text-green-500 p-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-6" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                <button @click="successModalIsOpen = false" aria-label="close modal">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" stroke="currentColor" fill="none" stroke-width="1.4" class="w-5 h-5">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <!-- Dialog Body -->
+                                            <div class="px-4 text-center"> 
+                                                <h3 id="successModalTitle" class="mb-2 font-semibold tracking-wide text-neutral-900 dark:text-white">
+                                                    {{quiz.name}}
+                                                </h3>
+                                                <p>{{quiz.body}}</p>
+                                            </div>
+                                            <!-- Dialog Footer -->
+                                            <div class="flex items-center justify-center border-neutral-300 p-4 dark:border-neutral-700">
+                                                <button
+                                                    type="button"
+                                                    x-on:click="window.location.href = window.location.href + 'quizs/' + {{quiz.id}} + '/quizs/'"
+                                                    class="w-full cursor-pointer whitespace-nowrap rounded-md bg-green-500 px-4 py-2 text-center text-sm font-semibold tracking-wide text-white transition hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500 active:opacity-100 active:outline-offset-0">
+                                                    Boshlash
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                  <!--end model-->
+                                </div>
+                              </article>
+                            
+                            </div>
+                        {% endfor %}
+                      </div>
+                          
+                      </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+{% endblock content %}
