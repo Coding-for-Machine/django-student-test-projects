@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
 
-    'users.apps.UsersConfig',
+    'users',
     'quizes.apps.QuizesConfig',
     'questions.apps.QuestionsConfig',
     'results.apps.ResultsConfig',
