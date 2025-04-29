@@ -4,6 +4,8 @@ FROM python:3.11-slim
 # Ishlash uchun katalogni belgilash
 WORKDIR /app
 
+
+
 # Zarur fayllarni nusxalash
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
